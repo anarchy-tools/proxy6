@@ -6,6 +6,7 @@ yargs.version(false);
 import util from "util";
 
 export function responseToFirstExport(response) {
+	console.log(response);
   const proxy = response.list[Object.keys(response.list)[0]];
   return proxyToExport(proxy);
 }
@@ -41,7 +42,7 @@ export async function runCLI() {
       r[snakeCase(key)] = value;
       return r;
     }, {}));
-    if (toExport) {
+    if (toExport && response.status === 'yes') {
       if (arg === 'buy') {
         console.log(responseToFirstExport(response));
       } else if (arg === 'getproxy') {
