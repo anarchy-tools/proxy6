@@ -1,5 +1,6 @@
-import axios from "axios";
-import qs from 'querystring';
+import qs from "querystring";
+import fetch from "node-fetch";
+import { SocksProxyAgent } from "socks-proxy-agent";
 
 export type IGetPriceRequest = {
   count: number;
@@ -187,14 +188,21 @@ export type ICheckResponse = {
 export class Proxy6Client {
   static BASE_URL = "https://proxy6.net/api";
   public apiKey: string;
-  constructor(apiKey) {
+  constructor({
+    apiKey,
+    proxyOptions
+  }) {
     this.apiKey = apiKey;
+    this.proxyOptions = proxyOptions;
   }
   async _call(method, data) {
-    const response = await axios.get((this.constructor as any).BASE_URL + '/' + this.apiKey + '/' + method + (Object.keys(data).length ? '?' + qs.stringify(data) : ''), {
-      responseType: 'json'
-    });
-    return response.data;
+    delete data[0];
+    delete data[''];
+    const response = (await fetch((this.constructor as any).BASE_URL + '/' + this.apiKey + '/' + method + '/' + (Object.keys(data).length ? '?' + qs.stringify(data) : ''), {
+      method:'GET',
+      agent: this.proxyOptions && new SocksProxyAgent(this.proxyOptions);
+    }));
+    return response.json();
   }
   static fromEnv() {
     return new this(process.env.PROXY6_API_KEY);
