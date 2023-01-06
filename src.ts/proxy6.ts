@@ -188,6 +188,7 @@ export type ICheckResponse = {
 export class Proxy6Client {
   static BASE_URL = "https://proxy6.net/api";
   public apiKey: string;
+  public proxyOptions: any;
   constructor({
     apiKey,
     proxyOptions
@@ -200,12 +201,14 @@ export class Proxy6Client {
     delete data[''];
     const response = (await fetch((this.constructor as any).BASE_URL + '/' + this.apiKey + '/' + method + '/' + (Object.keys(data).length ? '?' + qs.stringify(data) : ''), {
       method:'GET',
-      agent: this.proxyOptions && new SocksProxyAgent(this.proxyOptions);
+      agent: this.proxyOptions && new SocksProxyAgent(this.proxyOptions)
     }));
     return response.json();
   }
   static fromEnv() {
-    return new this(process.env.PROXY6_API_KEY);
+    return new this({
+      apiKey: process.env.PROXY6_API_KEY
+    } as any);
   }
   static getVersion(s) {
     return {

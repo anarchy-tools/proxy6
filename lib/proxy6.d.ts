@@ -162,7 +162,11 @@ export declare type ICheckResponse = {
 export declare class Proxy6Client {
     static BASE_URL: string;
     apiKey: string;
-    constructor(apiKey: any);
+    proxyOptions: any;
+    constructor({ apiKey, proxyOptions }: {
+        apiKey: any;
+        proxyOptions: any;
+    });
     _call(method: any, data: any): Promise<any>;
     static fromEnv(): Proxy6Client;
     static getVersion(s: any): any;
