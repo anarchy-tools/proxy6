@@ -38,7 +38,7 @@ export async function runCLI() {
     const toExport = options['to-export'] || options.e;
     delete options['to-export'];
     delete options.e;
-    const response = await client._call(arg, Object.entries(options).reduce((r, [key, value]) => {
+    const response = arg === 'ipinfo' ? await client.ipinfo() : await client._call(arg, Object.entries(options).reduce((r, [key, value]) => {
       r[snakeCase(key)] = value;
       return r;
     }, {}));

@@ -168,6 +168,7 @@ export declare class Proxy6Client {
         proxyOptions: any;
     });
     _call(method: any, data: any): Promise<any>;
+    ipinfo(): Promise<any>;
     static fromEnv(): Proxy6Client;
     static getVersion(s: any): any;
     getprice(o: IGetPriceRequest): Promise<IGetPriceResponse | ErrorResponse>;

@@ -1,5 +1,6 @@
 import qs from "querystring";
 import fetch from "node-fetch";
+import url from "url";
 import { SocksProxyAgent } from "socks-proxy-agent";
 
 export type IGetPriceRequest = {
@@ -185,6 +186,18 @@ export type ICheckResponse = {
   proxy_status: boolean;
 }
 
+function proxyStringToObject(proxyUri: string) {
+  const parsed = url.parse(proxyUri);
+  const [username, ...passwordParts] = (parsed.auth || "").split(":");
+  return {
+    protocol: parsed.protocol,
+    hostname: parsed.hostname,
+    port: parsed.port,
+    userId: username || null,
+    password: passwordParts.join(":") || null,
+  };
+}
+
 export class Proxy6Client {
   static BASE_URL = "https://proxy6.net/api";
   public apiKey: string;
@@ -205,9 +218,17 @@ export class Proxy6Client {
     }));
     return response.json();
   }
+  async ipinfo() {
+    const response = (await fetch('https://ipinfo.io/json', {
+      method:'GET',
+      agent: this.proxyOptions && new SocksProxyAgent(this.proxyOptions)
+    }));
+    return response.json();
+  }
   static fromEnv() {
     return new this({
-      apiKey: process.env.PROXY6_API_KEY
+      apiKey: process.env.PROXY6_API_KEY,
+      proxyOptions: process.env.PROXY6_PROXY && proxyStringToObject(process.env.PROXY6_PROXY)
     } as any);
   }
   static getVersion(s) {
